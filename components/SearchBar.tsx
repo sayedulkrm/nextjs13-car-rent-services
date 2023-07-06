@@ -16,49 +16,52 @@ const SearchButton = ({ otherClasses }: { otherClasses: string }) => (
     </button>
 );
 
-const SearchBar = () => {
-    const [menuFacturer, setMenuFacturer] = useState("");
-    const [model, setModel] = useState("");
+const SearchBar = ({ setMenufacturer, setModel }) => {
+    const [searchMenuFacturer, setSearchMenuFacturer] = useState("");
+    const [searchModel, setSearchModel] = useState("");
     const router = useRouter();
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        if (menuFacturer === "" && model === "") {
+        if (searchMenuFacturer === "" && searchModel === "") {
             return alert("Please enter a search term");
         }
 
-        updateSearchParams(model.toLowerCase(), menuFacturer.toLowerCase());
+        setModel(searchModel);
+        setMenufacturer(searchMenuFacturer);
+
+        // updateSearchParams(searchModel.toLowerCase(), searchMenuFacturer.toLowerCase());
     };
 
-    const updateSearchParams = (model: string, menuFacturer: string) => {
-        const searchParams = new URLSearchParams();
+    // const updateSearchParams = (model: string, menuFacturer: string) => {
+    //     const searchParams = new URLSearchParams();
 
-        if (model !== "") {
-            searchParams.set("model", model);
-        } else {
-            searchParams.delete("model");
-        }
+    //     if (model !== "") {
+    //         searchParams.set("model", model);
+    //     } else {
+    //         searchParams.delete("model");
+    //     }
 
-        if (menuFacturer !== "") {
-            searchParams.set("menufacturer", menuFacturer);
-        } else {
-            searchParams.delete("menufacturer");
-        }
+    //     if (menuFacturer !== "") {
+    //         searchParams.set("menufacturer", menuFacturer);
+    //     } else {
+    //         searchParams.delete("menufacturer");
+    //     }
 
-        const newPathName = `${
-            window.location.pathname
-        }?${searchParams.toString()}`;
+    //     const newPathName = `${
+    //         window.location.pathname
+    //     }?${searchParams.toString()}`;
 
-        router.push(newPathName);
-    };
+    //     router.push(newPathName);
+    // };
 
     return (
         <form className="searchbar" onSubmit={handleSubmit}>
             <div className="searchbar__item">
                 <SearchMenufacturer
-                    menuFacturer={menuFacturer}
-                    setMenuFacturer={setMenuFacturer}
+                    selected={searchMenuFacturer}
+                    setSelected={setSearchMenuFacturer}
                 />
                 <SearchButton otherClasses="sm:hidden" />
             </div>
@@ -74,8 +77,8 @@ const SearchBar = () => {
                 <input
                     type="text"
                     name="model"
-                    value={model}
-                    onChange={(e) => setModel(e.target.value)}
+                    value={searchModel}
+                    onChange={(e) => setSearchModel(e.target.value)}
                     placeholder="Tiguan..."
                     className="searchbar__input"
                 />

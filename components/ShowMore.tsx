@@ -6,7 +6,7 @@ import { IShowMoreProps } from "@/types";
 import CustomButton from "./CustomButton";
 import { updateSearchParams } from "@/utils";
 
-const ShowMore = ({ pageNumber, isNext }: IShowMoreProps) => {
+const ShowMore = ({ pageNumber, isNext, setLimit }: IShowMoreProps) => {
     const router = useRouter();
 
     const handleNavigation = () => {
@@ -15,9 +15,11 @@ const ShowMore = ({ pageNumber, isNext }: IShowMoreProps) => {
 
         // Update the "limit" search parameter in the URL with the new value
 
-        const newPathName = updateSearchParams("limit", `${newLimit}`);
+        // const newPathName = updateSearchParams("limit", `${newLimit}`);
 
-        router.push(newPathName);
+        // router.push(newPathName);
+
+        setLimit(newLimit);
     };
 
     return (

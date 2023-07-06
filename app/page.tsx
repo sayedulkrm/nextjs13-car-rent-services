@@ -1,16 +1,52 @@
-import React from "react";
+"use client";
+
+import React, { useEffect, useState } from "react";
 import { CarCard, CustomFilter, Hero, SearchBar, ShowMore } from "@/components";
 import { fetchCars } from "@/utils";
 import { fuels, yearsOfProduction } from "@/constants";
+import Image from "next/image";
 
-const Home = async ({ searchParams }) => {
-    const allCars = await fetchCars({
-        manufacturer: searchParams.manufacturer || "",
-        year: searchParams.year || 2022,
-        fuel: searchParams.fuel || "",
-        limit: searchParams.limit || 10,
-        model: searchParams.model || "",
-    });
+const Home = () => {
+    const [allCars, setAllCars] = useState([]);
+    const [loading, setLoading] = useState(false);
+    // const [searchParams, setSearchParams] = useState();
+
+    const [menufacturer, setMenufacturer] = useState("");
+
+    const [model, setModel] = useState("");
+
+    //    Filter state
+
+    const [fuel, setFuel] = useState("");
+
+    const [year, setYear] = useState(2022);
+
+    // pagination
+
+    const [limit, setLimit] = useState(10);
+
+    const getCars = async () => {
+        setLoading(true);
+        try {
+            const result = await fetchCars({
+                manufacturer: menufacturer || "",
+                year: year || 2022,
+                fuel: fuel || "",
+                limit: limit || 10,
+                model: model || "",
+            });
+
+            setAllCars(result);
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        getCars();
+    }, [menufacturer, model, fuel, year, limit]);
 
     const isDataEmpty =
         !Array.isArray(allCars) || allCars.length < 1 || !allCars;
@@ -23,27 +59,49 @@ const Home = async ({ searchParams }) => {
                     <p>Explore out cars you might like</p>
                 </div>
                 <div className="home__filters">
-                    <SearchBar />
+                    <SearchBar
+                        setMenufacturer={setMenufacturer}
+                        setModel={setModel}
+                    />
 
                     <div className="home__filter-container">
-                        <CustomFilter title="fuel" options={fuels} />
                         <CustomFilter
+                            title="fuel"
+                            options={fuels}
+                            setFilter={setFuel}
+                        />
+                        <CustomFilter
+                            setFilter={setYear}
                             title="year"
                             options={yearsOfProduction}
                         />
                     </div>
                 </div>
 
-                {!isDataEmpty ? (
+                {allCars.length > 0 ? (
                     <section>
                         <div className="home__cars-wrapper">
                             {allCars?.map((car, i) => (
                                 <CarCard key={i} car={car} />
                             ))}
                         </div>
+
+                        {loading && (
+                            <div className="mt-16 w-full flex-center">
+                                <Image
+                                    src="/loader.svg"
+                                    alt="loader"
+                                    width={50}
+                                    height={50}
+                                    className="object-contain"
+                                />
+                            </div>
+                        )}
+
                         <ShowMore
-                            pageNumber={(searchParams.limit || 10) / 10}
-                            isNext={(searchParams.limit || 10) > allCars.length}
+                            pageNumber={limit / 10}
+                            isNext={limit > allCars.length}
+                            setLimit={setLimit}
                         />
                     </section>
                 ) : (
